@@ -1,6 +1,7 @@
 import "./styles/global.css";
+import { Quiz } from "./components/Quiz";
 function App() {
-  return <h1>Hello Word</h1>;
+  return <Quiz />;
 }
 
 export default App;
