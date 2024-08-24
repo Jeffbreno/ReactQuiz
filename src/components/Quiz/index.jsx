@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { QuestionAnswer } from "../QuestionAnswer";
+import { Button } from "../Button";
 import S from "./styles.module.css";
+import { Result } from "../Result";
+import { ProgressBar } from "../ProgressBar";
 
 const QUESTIONS = [
   {
@@ -35,10 +38,14 @@ const QUESTIONS = [
 ];
 
 export function Quiz() {
-  const currentQuestion = QUESTIONS[0];
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
   const [isCurrentQuestionAnswered, setIsCurrentQuestionAnswered] =
     useState(false);
+  const [isTakingQuiz, setIsTakingQuiz] = useState(true);
+  const currentQuestionNumber = currentQuestionIndex + 1;
+
+  const quizSize = QUESTIONS.length;
 
   const handleAnswersQuestion = (event, question, answer) => {
     if (isCurrentQuestionAnswered) {
@@ -55,26 +62,64 @@ export function Quiz() {
 
     setIsCurrentQuestionAnswered(true);
   };
+
+  const handleNextQueston = () => {
+    if (currentQuestionIndex + 1 < quizSize) {
+      setCurrentQuestionIndex((index) => index + 1);
+    } else {
+      setIsTakingQuiz(false);
+    }
+
+    setIsCurrentQuestionAnswered(false);
+  };
+
+  const handleTryAgain = () => {
+    setIsTakingQuiz(true);
+    setCorrectAnswersCount(0);
+    setCurrentQuestionIndex(0);
+  };
+
+  const currentQuestion = QUESTIONS[currentQuestionIndex];
+  const navigationButtonText =
+    currentQuestionIndex + 1 === quizSize
+      ? "Ver Resultado"
+      : "Próxima Pergunta";
   return (
     <div className={S.container}>
       <div className={S.card}>
-        <div className={S.quiz}>
-          <header className={S.quizHeader}>
-            <span className={S.questionCount}>Pergunta 1/3</span>
-            <p className={S.question}>{currentQuestion.question}</p>
-          </header>
-          <ul className={S.answers}>
-            {currentQuestion.answers.map((answer) => (
-              <li key={answer} className={S.answersItem}>
-                <QuestionAnswer
-                  answer={answer}
-                  question={currentQuestion}
-                  handleAnswersQuestion={handleAnswersQuestion}
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
+        {isTakingQuiz ? (
+          <div className={S.quiz}>
+            <ProgressBar size={quizSize} currentStep={currentQuestionNumber}/>
+            <header className={S.quizHeader}>
+              <span className={S.questionCount}>
+                Pergunta {currentQuestionNumber}/{quizSize}
+              </span>
+              <p className={S.question}>{currentQuestion.question}</p>
+            </header>
+            <ul className={S.answers}>
+              {currentQuestion.answers.map((answer) => (
+                <li key={answer} className={S.answersItem}>
+                  <QuestionAnswer
+                    answer={answer}
+                    question={currentQuestion}
+                    handleAnswersQuestion={handleAnswersQuestion}
+                  />
+                </li>
+              ))}
+            </ul>
+            {isCurrentQuestionAnswered && (
+              <Button onClick={handleNextQueston}>
+                {navigationButtonText}
+              </Button>
+            )}
+          </div>
+        ) : (
+          <Result
+            correctAnswersCount={correctAnswersCount}
+            quizSize={quizSize}
+            handleTryAgain={handleTryAgain}
+          />
+        )}
       </div>
     </div>
   );

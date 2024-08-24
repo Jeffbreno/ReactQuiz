@@ -12,7 +12,7 @@
   max-width: 1000px;
   width: 100%;
   margin: 20px;
-  box-shadow: rgb(149, 157, 0.2) 0px 8px 24px;
+  box-shadow: rgb(133, 193, 233) 0px 8px 24px;
 }
 
 .quiz {
@@ -48,6 +48,7 @@
 
 .answers {
   margin-top: 40px;
+  margin-bottom: 40px;
   max-width: 600px;
   width: 100%;
 }
