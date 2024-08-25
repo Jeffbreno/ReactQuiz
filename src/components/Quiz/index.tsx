@@ -1,28 +1,35 @@
-import { useState } from "react";
+import { MouseEvent, useState } from "react";
 import { QuestionAnswer } from "../QuestionAnswer";
 import { Button } from "../Button";
 import S from "./styles.module.css";
 import { Result } from "../Result";
 import { ProgressBar } from "../ProgressBar";
 
-const QUESTIONS = [
+export interface Question {
+  id: number;
+  question: string;
+  answers: string[];
+  correctAnswer: string;
+}
+
+const QUESTIONS: Question[] = [
   {
     id: 1,
     question: "Qual é o meu nome?",
     answers: ["Jefferson", "Belmir", "Luiz", "Tony"],
-    correctAnswers: "Belmir",
+    correctAnswer: "Belmir",
   },
   {
     id: 2,
     question: "Qual é o minha idade?",
     answers: ["12", "38", "58", "86"],
-    correctAnswers: "86",
+    correctAnswer: "86",
   },
   {
     id: 3,
     question: "O que eu sou??",
     answers: ["Mãe", "Pai", "Tio", "Neto"],
-    correctAnswers: "Pai",
+    correctAnswer: "Pai",
   },
   {
     id: 4,
@@ -33,26 +40,29 @@ const QUESTIONS = [
       "Um assassino",
       "Melhor pai que uma pessoa pode ter",
     ],
-    correctAnswers: "Melhor pai que uma pessoa pode ter",
+    correctAnswer: "Melhor pai que uma pessoa pode ter",
   },
 ];
 
 export function Quiz() {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
-  const [isCurrentQuestionAnswered, setIsCurrentQuestionAnswered] =
-    useState(false);
-  const [isTakingQuiz, setIsTakingQuiz] = useState(true);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
+  const [correctAnswersCount, setCorrectAnswersCount] = useState<number>(0);
+  const [isCurrentQuestionAnswered, setIsCurrentQuestionAnswered] = useState<boolean>(false);
+  const [isTakingQuiz, setIsTakingQuiz] = useState<boolean>(true);
   const currentQuestionNumber = currentQuestionIndex + 1;
 
   const quizSize = QUESTIONS.length;
 
-  const handleAnswersQuestion = (event, question, answer) => {
+  const handleAnswerQuestion = (
+    event: MouseEvent<HTMLButtonElement>,
+    question: Question,
+    answer: string
+  ) => {
     if (isCurrentQuestionAnswered) {
       return;
     }
 
-    const isCorrectAnswer = question.correctAnswers === answer;
+    const isCorrectAnswer = question.correctAnswer === answer;
     const resultClassName = isCorrectAnswer ? S.correct : S.incorrect;
     event.currentTarget.classList.toggle(resultClassName);
 
@@ -89,7 +99,7 @@ export function Quiz() {
       <div className={S.card}>
         {isTakingQuiz ? (
           <div className={S.quiz}>
-            <ProgressBar size={quizSize} currentStep={currentQuestionNumber}/>
+            <ProgressBar size={quizSize} currentStep={currentQuestionNumber} />
             <header className={S.quizHeader}>
               <span className={S.questionCount}>
                 Pergunta {currentQuestionNumber}/{quizSize}
@@ -102,7 +112,7 @@ export function Quiz() {
                   <QuestionAnswer
                     answer={answer}
                     question={currentQuestion}
-                    handleAnswersQuestion={handleAnswersQuestion}
+                    handleAnswerQuestion={handleAnswerQuestion}
                   />
                 </li>
               ))}
